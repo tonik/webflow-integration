@@ -69,7 +69,7 @@ A .env file with your Webflow API key
 #### Installation
 1. Clone the repository:
 ```
-git clone https://github.com/your-username/webflow-integration.git
+git clone [https://github.com/your-username/webflow-integration.git](https://github.com/tonik/webflow-integration.git)
 cd webflow-integration
 ```
 
