@@ -121,7 +121,3 @@ The project uses retry logic to handle API rate limits and transient errors, ens
 ## Contributing
 Contributions are welcome! If you have ideas for improving this project or want to report a bug, feel free to open an issue or submit a pull request.
 
----
-
-## License
-This project is licensed under the MIT License. See the LICENSE file for details.
