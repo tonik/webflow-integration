@@ -45,8 +45,8 @@ export const syncWebflowItems = (
         if (!existingItem) {
           // Create if doesn't exist
           const created = yield* _(createItemWithRetry(collectionId, newItem));
-          if (created) {
-            result.itemIds.push(created.id as string);
+          if (created && created.id) {
+            result.itemIds.push(created.id);
             result.created++;
           } else {
             result.errors.push({
@@ -54,17 +54,13 @@ export const syncWebflowItems = (
               while: 'creating',
             });
           }
-        } else {
+        } else if (existingItem.id) {
           // Update if exists
           const updated = yield* _(
-            updateItemWithRetry(
-              collectionId,
-              existingItem.id as string,
-              newItem
-            )
+            updateItemWithRetry(collectionId, existingItem.id, newItem)
           );
           if (updated) {
-            result.itemIds.push(existingItem.id as string);
+            result.itemIds.push(existingItem.id);
             result.updated++;
           } else {
             result.errors.push({

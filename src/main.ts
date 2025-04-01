@@ -10,16 +10,17 @@ import '../config/environment';
 
 import { Effect } from 'effect';
 
-import { collectionId } from './constants/collection';
 import { newTransformedItems } from './constants/items';
 import { syncWebflowItems } from './services/sync/syncItems';
-import { SyncResult } from './services/sync/types';
 
 const main = async () => {
   try {
-    const program = syncWebflowItems(collectionId, newTransformedItems);
+    const collectionId = process.env.COLLECTION_ID ?? null;
+    if (!collectionId) throw new Error('Collection ID is required');
 
-    const result: SyncResult = await Effect.runPromise(program);
+    const result = await Effect.runPromise(
+      syncWebflowItems(collectionId, newTransformedItems)
+    );
 
     console.log(`Sync completed:
       Created: ${result.created}

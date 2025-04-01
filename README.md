@@ -42,7 +42,6 @@ This guide is designed to help developers understand how to structure and implem
 src/
 ├── main.ts                       # Main entry point of the application
 ├── constants/
-    |── collection.ts             # Stores collection-related constants
     └── items.ts                  # Stores item-related constants
 └── services/
     ├── webflow/

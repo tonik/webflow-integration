@@ -1,9 +1,5 @@
 /*
- * Stores constants related to items being synced with Webflow.
- *
- * Purpose: Keeps item-related constants organized and reusable.
- * What to Add: Add arrays or objects representing items to be synced.
- * Why It's Here: Provides a centralized place for managing item-related data.
+ * This is just example of items to be synced with Webflow.
  */
 
 export const newTransformedItems = [
