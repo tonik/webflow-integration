@@ -6,13 +6,6 @@
  * Why It's Here: Ensures consistent and clear typing for syncing-related data.
  */
 
-import { WebflowCollectionItem } from '../webflow/types';
-
-export interface SinkInput<TNewData extends { customid: string }> {
-  existing: WebflowCollectionItem[];
-  newData: TNewData[];
-}
-
 export interface SyncResult {
   itemIds: string[];
   created: number;
