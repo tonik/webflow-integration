@@ -11,15 +11,28 @@ import { Webflow, WebflowError } from 'webflow-api';
 import { TooManyRequestsError } from 'webflow-api/api';
 import { webflow } from './client';
 
+// For testing purposes, the retry interval is reduced from 10 seconds to 1 second when running in a Jest environment.
+// This ensures that tests run faster while maintaining the same retry logic.
+export const webflowRetrySchedule = Effect.retry(
+  Schedule.exponential(process.env.IS_JEST ? '1 second' : '10 seconds').pipe(
+    Schedule.compose(Schedule.recurs(10))
+  )
+);
+
 // Common error handling helper
-const handleWebflowError = Effect.catchAll((error: WebflowError) =>
-  error instanceof TooManyRequestsError
+export const handleWebflowError = Effect.catchAll((error: WebflowError) => {
+  const isTooManyRequests =
+    error instanceof TooManyRequestsError ||
+    // @ts-ignore
+    error?.error instanceof TooManyRequestsError;
+
+  return isTooManyRequests
     ? Effect.fail(error) // Let this error be caught by retry
     : Effect.sync(() => {
         console.error('Webflow operation failed:', error);
         return null; // Allow other operations to continue
-      })
-);
+      });
+});
 
 // Update operation
 const updateWebflowItem = (
@@ -38,14 +51,7 @@ export const updateItemWithRetry = (
   collectionId: string,
   itemId: string,
   data: Webflow.CollectionItemFieldData
-) =>
-  updateWebflowItem(collectionId, itemId, data).pipe(
-    Effect.retry(
-      Schedule.exponential('10 seconds').pipe(
-        Schedule.compose(Schedule.recurs(10))
-      )
-    )
-  );
+) => updateWebflowItem(collectionId, itemId, data).pipe(webflowRetrySchedule);
 
 // Create operation
 const createWebflowItem = (
@@ -63,14 +69,7 @@ const createWebflowItem = (
 export const createItemWithRetry = (
   collectionId: string,
   data: Webflow.CollectionItemFieldData
-) =>
-  createWebflowItem(collectionId, data).pipe(
-    Effect.retry(
-      Schedule.exponential('10 seconds').pipe(
-        Schedule.compose(Schedule.recurs(10))
-      )
-    )
-  );
+) => createWebflowItem(collectionId, data).pipe(webflowRetrySchedule);
 
 // Publish operation
 const publishWebflowItem = (collectionId: string, itemId: string[]) =>
@@ -79,10 +78,4 @@ const publishWebflowItem = (collectionId: string, itemId: string[]) =>
   ).pipe(handleWebflowError);
 
 export const publishItemWithRetry = (collectionId: string, itemId: string[]) =>
-  publishWebflowItem(collectionId, itemId).pipe(
-    Effect.retry(
-      Schedule.exponential('10 seconds').pipe(
-        Schedule.compose(Schedule.recurs(10))
-      )
-    )
-  );
+  publishWebflowItem(collectionId, itemId).pipe(webflowRetrySchedule);
