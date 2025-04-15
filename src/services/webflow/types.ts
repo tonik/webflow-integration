@@ -8,13 +8,6 @@
 
 import { CollectionItem } from 'webflow-api/api';
 
-export interface WebflowCollectionItem
-  extends Omit<CollectionItem, 'fieldData'> {
-  fieldData: RecordsSchema;
+export interface WebflowCollectionItem extends CollectionItem {
+  fieldData: CollectionItem['fieldData'] & { customid: string };
 }
-
-export type RecordsSchema = {
-  customid: string;
-  name: string;
-  slug: string;
-};

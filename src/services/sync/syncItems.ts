@@ -7,17 +7,17 @@
  */
 
 import { Effect } from 'effect';
+import { CollectionItem } from 'webflow-api/api';
 import { fetchExisting } from '../webflow/fetch';
 import {
   createItemWithRetry,
   updateItemWithRetry,
 } from '../webflow/operations';
-import { RecordsSchema } from '../webflow/types';
 import { SyncResult } from './types';
 
 export const syncWebflowItems = (
   collectionId: string,
-  newItems: RecordsSchema[]
+  newItems: CollectionItem['fieldData'][]
 ) =>
   Effect.gen(function* (_) {
     // Fetch all existing records
