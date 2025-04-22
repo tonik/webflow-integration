@@ -22,14 +22,22 @@ const handleFetchError = Effect.catchAll(
         }) // Throw other errors instead of continuing
 );
 
+const webflowMaxRetries = {
+  maxRetries: 0,
+};
+
 export const fetchExisting = (collectionId: string) => {
   // Function to fetch a single page with error handling and retry
   const fetchPage = (offset: number) =>
     Effect.tryPromise(() =>
-      webflow.collections.items.listItems(collectionId, {
-        limit: 100,
-        offset,
-      })
+      webflow.collections.items.listItems(
+        collectionId,
+        {
+          limit: 100,
+          offset,
+        },
+        webflowMaxRetries
+      )
     ).pipe(
       handleFetchError,
       Effect.retry(

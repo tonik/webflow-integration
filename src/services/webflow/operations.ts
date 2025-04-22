@@ -11,6 +11,10 @@ import { Webflow, WebflowError } from 'webflow-api';
 import { TooManyRequestsError } from 'webflow-api/api';
 import { webflow } from './client';
 
+const webflowMaxRetries = {
+  maxRetries: 0,
+};
+
 // For testing purposes, the retry interval is reduced from 10 seconds to 1 second when running in a Jest environment.
 // This ensures that tests run faster while maintaining the same retry logic.
 export const webflowRetrySchedule = Effect.retry(
@@ -41,10 +45,15 @@ const updateWebflowItem = (
   data: Webflow.CollectionItemFieldData
 ) =>
   Effect.tryPromise(() =>
-    webflow.collections.items.updateItem(collectionId, itemId, {
-      id: itemId,
-      fieldData: data,
-    })
+    webflow.collections.items.updateItem(
+      collectionId,
+      itemId,
+      {
+        id: itemId,
+        fieldData: data,
+      },
+      webflowMaxRetries
+    )
   ).pipe(handleWebflowError);
 
 export const updateItemWithRetry = (
@@ -60,10 +69,14 @@ const createWebflowItem = (
 ) =>
   Effect.tryPromise(
     async () =>
-      await webflow.collections.items.createItem(collectionId, {
-        fieldData: data,
-        id: '',
-      })
+      await webflow.collections.items.createItem(
+        collectionId,
+        {
+          fieldData: data,
+          id: '',
+        },
+        webflowMaxRetries
+      )
   ).pipe(handleWebflowError);
 
 export const createItemWithRetry = (
@@ -74,7 +87,11 @@ export const createItemWithRetry = (
 // Publish operation
 const publishWebflowItem = (collectionId: string, itemId: string[]) =>
   Effect.tryPromise(() =>
-    webflow.collections.items.publishItem(collectionId, { itemIds: itemId })
+    webflow.collections.items.publishItem(
+      collectionId,
+      { itemIds: itemId },
+      webflowMaxRetries
+    )
   ).pipe(handleWebflowError);
 
 export const publishItemWithRetry = (collectionId: string, itemId: string[]) =>
